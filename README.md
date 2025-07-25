@@ -291,6 +291,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ### Does AutoPilot work globally on my Mac?
 **YES!** Once installed with `npm install -g`, AutoPilot is available system-wide. But you need to run `claude-autopilot setup` once in each project.
 
+### Does it work with brand new/empty projects?
+**YES!** AutoPilot detects when you're in an empty directory and will:
+1. Ask what type of project you're creating (React, Python, etc.)
+2. Configure appropriate testing agents for that project type
+3. Optionally create initial project files for you
+
 ### Do I still need to use the `claude` command?
 **YES!** AutoPilot extends Claude Code, it doesn't replace it. You use `claude "your request" --auto`.
 

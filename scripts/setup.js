@@ -122,6 +122,84 @@ async function detectProjectConfiguration() {
   } else if (await fs.pathExists('go.mod')) {
     config.type = 'go';
     config.testFramework = 'go-test';
+  } else {
+    // Brand new project - ask user what type
+    console.log(chalk.yellow('  ⚠️  No project files detected - appears to be a new project'));
+    
+    if (!options.yes) {
+      const inquirer = require('inquirer');
+      const answers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'projectType',
+          message: 'What type of project will this be?',
+          choices: [
+            { name: 'JavaScript/TypeScript (Node.js)', value: 'javascript' },
+            { name: 'React Application', value: 'react' },
+            { name: 'Vue Application', value: 'vue' },
+            { name: 'Python Project', value: 'python' },
+            { name: 'Rust Project', value: 'rust' },
+            { name: 'Go Project', value: 'go' },
+            { name: 'Other/Generic', value: 'generic' }
+          ]
+        }
+      ]);
+      
+      config.type = answers.projectType === 'react' || answers.projectType === 'vue' ? 'javascript' : answers.projectType;
+      
+      // Set up appropriate defaults for new projects
+      switch (answers.projectType) {
+        case 'react':
+          config.frameworks = ['react'];
+          config.agents = ['unit-test', 'gui-test'];
+          config.testFramework = 'jest';
+          break;
+        case 'vue':
+          config.frameworks = ['vue'];
+          config.agents = ['unit-test', 'gui-test'];
+          config.testFramework = 'vitest';
+          break;
+        case 'javascript':
+          config.agents = ['unit-test'];
+          config.testFramework = 'jest';
+          break;
+        case 'python':
+          config.agents = ['unit-test'];
+          config.testFramework = 'pytest';
+          break;
+        case 'rust':
+          config.agents = ['unit-test'];
+          config.testFramework = 'cargo';
+          break;
+        case 'go':
+          config.agents = ['unit-test'];
+          config.testFramework = 'go-test';
+          break;
+        default:
+          config.type = 'generic';
+          config.agents = ['unit-test'];
+      }
+      
+      // Offer to create initial project files
+      if (answers.projectType !== 'generic') {
+        const createFiles = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'createInitialFiles',
+            message: 'Would you like AutoPilot to create initial project files?',
+            default: true
+          }
+        ]);
+        
+        if (createFiles.createInitialFiles) {
+          await createInitialProjectFiles(answers.projectType);
+        }
+      }
+    } else {
+      // Non-interactive mode - default to generic
+      config.type = 'generic';
+      console.log(chalk.yellow('  ℹ️  Defaulting to generic project type'));
+    }
   }
   
   // Always add performance and security agents for non-trivial projects
@@ -337,6 +415,173 @@ async function validateSetup() {
       console.log(chalk.red(`  ❌ ${check.name}`));
       throw new Error(`Validation failed: ${check.name}`);
     }
+  }
+}
+
+async function createInitialProjectFiles(projectType) {
+  console.log(chalk.blue('  📁 Creating initial project files...'));
+  
+  switch (projectType) {
+    case 'react':
+      await fs.writeJson('package.json', {
+        name: path.basename(process.cwd()),
+        version: '0.1.0',
+        private: true,
+        scripts: {
+          start: 'react-scripts start',
+          build: 'react-scripts build',
+          test: 'react-scripts test',
+          eject: 'react-scripts eject'
+        },
+        dependencies: {
+          react: '^18.2.0',
+          'react-dom': '^18.2.0',
+          'react-scripts': '5.0.1'
+        }
+      }, { spaces: 2 });
+      
+      await fs.ensureDir('src');
+      await fs.writeFile('src/App.js', `import React from 'react';
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Welcome to React</h1>
+      <p>Edit src/App.js and save to reload.</p>
+    </div>
+  );
+}
+
+export default App;`);
+      
+      await fs.writeFile('.gitignore', 'node_modules/\nbuild/\n.env\n');
+      console.log(chalk.green('    ✅ Created React project structure'));
+      break;
+      
+    case 'javascript':
+      await fs.writeJson('package.json', {
+        name: path.basename(process.cwd()),
+        version: '1.0.0',
+        description: '',
+        main: 'index.js',
+        scripts: {
+          test: 'jest',
+          start: 'node index.js'
+        },
+        keywords: [],
+        author: '',
+        license: 'MIT',
+        devDependencies: {
+          jest: '^29.0.0'
+        }
+      }, { spaces: 2 });
+      
+      await fs.writeFile('index.js', `// Main application entry point
+
+function main() {
+  console.log('Hello from AutoPilot!');
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { main };`);
+      
+      await fs.writeFile('.gitignore', 'node_modules/\n.env\n');
+      console.log(chalk.green('    ✅ Created JavaScript project structure'));
+      break;
+      
+    case 'python':
+      await fs.writeFile('requirements.txt', `# Add your dependencies here
+pytest>=7.0.0
+`);
+      
+      await fs.writeFile('main.py', `#!/usr/bin/env python3
+"""Main application entry point"""
+
+def main():
+    """Main function"""
+    print("Hello from AutoPilot!")
+
+if __name__ == "__main__":
+    main()
+`);
+      
+      await fs.writeFile('.gitignore', `__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.env
+`);
+      
+      await fs.writeFile('test_main.py', `import pytest
+from main import main
+
+def test_main():
+    """Test main function"""
+    # Add your tests here
+    assert True
+`);
+      
+      console.log(chalk.green('    ✅ Created Python project structure'));
+      break;
+      
+    case 'rust':
+      await fs.writeFile('Cargo.toml', `[package]
+name = "${path.basename(process.cwd())}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+`);
+      
+      await fs.ensureDir('src');
+      await fs.writeFile('src/main.rs', `fn main() {
+    println!("Hello from AutoPilot!");
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
+}`);
+      
+      await fs.writeFile('.gitignore', 'target/\nCargo.lock\n');
+      console.log(chalk.green('    ✅ Created Rust project structure'));
+      break;
+      
+    case 'go':
+      await fs.writeFile('go.mod', `module ${path.basename(process.cwd())}
+
+go 1.21
+`);
+      
+      await fs.writeFile('main.go', `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello from AutoPilot!")
+}
+`);
+      
+      await fs.writeFile('main_test.go', `package main
+
+import "testing"
+
+func TestMain(t *testing.T) {
+    // Add your tests here
+    if 1+1 != 2 {
+        t.Error("Math is broken")
+    }
+}`);
+      
+      console.log(chalk.green('    ✅ Created Go project structure'));
+      break;
   }
 }
 
