@@ -1,6 +1,6 @@
 {
   "name": "claude-code-autopilot",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Autonomous execution and validation extension for Claude Code with multi-agent testing",
   "main": "index.js",
   "bin": {
