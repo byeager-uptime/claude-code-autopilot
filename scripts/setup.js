@@ -180,21 +180,77 @@ async function detectProjectConfiguration() {
           config.agents = ['unit-test'];
       }
       
-      // Offer to create initial project files
-      if (answers.projectType !== 'generic') {
-        const createFiles = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'createInitialFiles',
-            message: 'Would you like AutoPilot to create initial project files?',
-            default: true
-          }
-        ]);
-        
-        if (createFiles.createInitialFiles) {
-          await createInitialProjectFiles(answers.projectType);
+      // For new projects, gather PRD information
+      console.log(chalk.blue('\n📋 Let\'s create a Product Requirements Document to guide AutoPilot...\n'));
+      
+      const prdAnswers = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'productName',
+          message: 'What is the name of your product/project?',
+          validate: input => input.length > 0
+        },
+        {
+          type: 'input',
+          name: 'productDescription',
+          message: 'Describe what you\'re building in 1-2 sentences:',
+          validate: input => input.length > 10
+        },
+        {
+          type: 'input',
+          name: 'targetUsers',
+          message: 'Who are your target users?',
+          validate: input => input.length > 0
+        },
+        {
+          type: 'input',
+          name: 'coreProblem',
+          message: 'What problem does this solve for your users?',
+          validate: input => input.length > 10
+        },
+        {
+          type: 'input',
+          name: 'keyFeatures',
+          message: 'List 3-5 key features (comma separated):',
+          validate: input => input.split(',').length >= 2
+        },
+        {
+          type: 'list',
+          name: 'projectStage',
+          message: 'What stage is this project in?',
+          choices: [
+            'MVP/Prototype',
+            'Beta',
+            'Production Ready',
+            'Enterprise Scale'
+          ]
+        },
+        {
+          type: 'checkbox',
+          name: 'technicalRequirements',
+          message: 'Select any specific technical requirements:',
+          choices: [
+            'Real-time updates',
+            'User authentication',
+            'Database/persistence',
+            'API integration',
+            'Mobile responsive',
+            'Offline support',
+            'High performance',
+            'Enterprise security'
+          ]
+        },
+        {
+          type: 'input',
+          name: 'constraints',
+          message: 'Any constraints or special requirements? (optional)',
+          default: ''
         }
-      }
+      ]);
+      
+      // Create PRD file
+      await createProjectPRD(answers.projectType, prdAnswers);
+      config.hasPRD = true;
     } else {
       // Non-interactive mode - default to generic
       config.type = 'generic';
@@ -335,7 +391,9 @@ async function createProjectConfiguration(projectConfig) {
         frameworks: projectConfig.frameworks,
         test_command: getTestCommand(projectConfig),
         lint_command: getLintCommand(projectConfig),
-        build_command: getBuildCommand(projectConfig)
+        build_command: getBuildCommand(projectConfig),
+        has_prd: projectConfig.hasPRD || false,
+        prd_path: projectConfig.hasPRD ? '.claude/PRD.md' : null
       }
     }
   };
@@ -418,171 +476,80 @@ async function validateSetup() {
   }
 }
 
-async function createInitialProjectFiles(projectType) {
-  console.log(chalk.blue('  📁 Creating initial project files...'));
+async function createProjectPRD(projectType, prdData) {
+  console.log(chalk.blue('  📄 Creating Product Requirements Document...'));
   
-  switch (projectType) {
-    case 'react':
-      await fs.writeJson('package.json', {
-        name: path.basename(process.cwd()),
-        version: '0.1.0',
-        private: true,
-        scripts: {
-          start: 'react-scripts start',
-          build: 'react-scripts build',
-          test: 'react-scripts test',
-          eject: 'react-scripts eject'
-        },
-        dependencies: {
-          react: '^18.2.0',
-          'react-dom': '^18.2.0',
-          'react-scripts': '5.0.1'
-        }
-      }, { spaces: 2 });
-      
-      await fs.ensureDir('src');
-      await fs.writeFile('src/App.js', `import React from 'react';
+  const prdContent = `# ${prdData.productName} - Product Requirements Document
 
-function App() {
-  return (
-    <div className="App">
-      <h1>Welcome to React</h1>
-      <p>Edit src/App.js and save to reload.</p>
-    </div>
-  );
-}
+## Project Overview
 
-export default App;`);
-      
-      await fs.writeFile('.gitignore', 'node_modules/\nbuild/\n.env\n');
-      console.log(chalk.green('    ✅ Created React project structure'));
-      break;
-      
-    case 'javascript':
-      await fs.writeJson('package.json', {
-        name: path.basename(process.cwd()),
-        version: '1.0.0',
-        description: '',
-        main: 'index.js',
-        scripts: {
-          test: 'jest',
-          start: 'node index.js'
-        },
-        keywords: [],
-        author: '',
-        license: 'MIT',
-        devDependencies: {
-          jest: '^29.0.0'
-        }
-      }, { spaces: 2 });
-      
-      await fs.writeFile('index.js', `// Main application entry point
+**Description**: ${prdData.productDescription}
 
-function main() {
-  console.log('Hello from AutoPilot!');
-}
+**Project Type**: ${projectType.charAt(0).toUpperCase() + projectType.slice(1)}
 
-if (require.main === module) {
-  main();
-}
+**Stage**: ${prdData.projectStage}
 
-module.exports = { main };`);
-      
-      await fs.writeFile('.gitignore', 'node_modules/\n.env\n');
-      console.log(chalk.green('    ✅ Created JavaScript project structure'));
-      break;
-      
-    case 'python':
-      await fs.writeFile('requirements.txt', `# Add your dependencies here
-pytest>=7.0.0
-`);
-      
-      await fs.writeFile('main.py', `#!/usr/bin/env python3
-"""Main application entry point"""
+## Target Users
 
-def main():
-    """Main function"""
-    print("Hello from AutoPilot!")
+${prdData.targetUsers}
 
-if __name__ == "__main__":
-    main()
-`);
-      
-      await fs.writeFile('.gitignore', `__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-venv/
-.env
-`);
-      
-      await fs.writeFile('test_main.py', `import pytest
-from main import main
+## Problem Statement
 
-def test_main():
-    """Test main function"""
-    # Add your tests here
-    assert True
-`);
-      
-      console.log(chalk.green('    ✅ Created Python project structure'));
-      break;
-      
-    case 'rust':
-      await fs.writeFile('Cargo.toml', `[package]
-name = "${path.basename(process.cwd())}"
-version = "0.1.0"
-edition = "2021"
+${prdData.coreProblem}
 
-[dependencies]
-`);
-      
-      await fs.ensureDir('src');
-      await fs.writeFile('src/main.rs', `fn main() {
-    println!("Hello from AutoPilot!");
-}
+## Key Features
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}`);
-      
-      await fs.writeFile('.gitignore', 'target/\nCargo.lock\n');
-      console.log(chalk.green('    ✅ Created Rust project structure'));
-      break;
-      
-    case 'go':
-      await fs.writeFile('go.mod', `module ${path.basename(process.cwd())}
+${prdData.keyFeatures.split(',').map((f, i) => `${i + 1}. ${f.trim()}`).join('\n')}
 
-go 1.21
-`);
-      
-      await fs.writeFile('main.go', `package main
+## Technical Requirements
 
-import "fmt"
+${prdData.technicalRequirements.length > 0 ? prdData.technicalRequirements.map(req => `- ${req}`).join('\n') : '- None specified'}
 
-func main() {
-    fmt.Println("Hello from AutoPilot!")
-}
-`);
-      
-      await fs.writeFile('main_test.go', `package main
+## Constraints & Special Requirements
 
-import "testing"
+${prdData.constraints || 'None specified'}
 
-func TestMain(t *testing.T) {
-    // Add your tests here
-    if 1+1 != 2 {
-        t.Error("Math is broken")
-    }
-}`);
-      
-      console.log(chalk.green('    ✅ Created Go project structure'));
-      break;
-  }
+## AutoPilot Configuration
+
+This PRD will guide AutoPilot's autonomous execution. When you use \`--auto\`, AutoPilot will:
+
+1. Consider the target users and problem statement when implementing features
+2. Ensure all key features are properly implemented and tested
+3. Respect technical requirements and constraints
+4. Generate appropriate tests based on project stage (${prdData.projectStage})
+
+## Getting Started
+
+Now you can use commands like:
+- \`create the main ${prdData.keyFeatures.split(',')[0].trim()} --auto\`
+- \`implement user authentication system --auto\` ${prdData.technicalRequirements.includes('User authentication') ? '(required)' : ''}
+- \`add database models for ${prdData.productName} --auto\` ${prdData.technicalRequirements.includes('Database/persistence') ? '(required)' : ''}
+
+AutoPilot will use this PRD to make informed decisions about implementation details.
+`;
+
+  // Save PRD
+  const prdPath = path.join(process.cwd(), '.claude', 'PRD.md');
+  await fs.writeFile(prdPath, prdContent);
+  
+  // Also save structured PRD data for programmatic access
+  const prdJson = {
+    productName: prdData.productName,
+    productDescription: prdData.productDescription,
+    projectType: projectType,
+    projectStage: prdData.projectStage,
+    targetUsers: prdData.targetUsers,
+    coreProblem: prdData.coreProblem,
+    keyFeatures: prdData.keyFeatures.split(',').map(f => f.trim()),
+    technicalRequirements: prdData.technicalRequirements,
+    constraints: prdData.constraints,
+    createdAt: new Date().toISOString()
+  };
+  
+  await fs.writeJson(path.join(process.cwd(), '.claude', 'prd.json'), prdJson, { spaces: 2 });
+  
+  console.log(chalk.green('  ✅ Created PRD.md and prd.json'));
+  console.log(chalk.gray(`  📁 PRD saved to: ${prdPath}`));
 }
 
 module.exports = { setupAutopilot };

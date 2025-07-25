@@ -294,8 +294,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ### Does it work with brand new/empty projects?
 **YES!** AutoPilot detects when you're in an empty directory and will:
 1. Ask what type of project you're creating (React, Python, etc.)
-2. Configure appropriate testing agents for that project type
-3. Optionally create initial project files for you
+2. Guide you through creating a Product Requirements Document (PRD)
+3. Use the PRD to make intelligent decisions when you use `--auto`
+
+This means AutoPilot understands your project's goals, target users, and requirements from the start!
 
 ### Do I still need to use the `claude` command?
 **YES!** AutoPilot extends Claude Code, it doesn't replace it. You use `claude "your request" --auto`.

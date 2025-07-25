@@ -5,18 +5,29 @@ All notable changes to Claude Code AutoPilot will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-12-XX
+
+### Added
+- Product Requirements Document (PRD) generation for new projects
+- Interactive setup wizard for empty directories that gathers:
+  - Product name and description
+  - Target users and problem statement
+  - Key features and technical requirements
+  - Project stage and constraints
+- PRD-guided autonomous execution for better context awareness
+
+### Changed
+- Empty projects now create a PRD instead of boilerplate files
+- AutoPilot uses PRD to make informed implementation decisions
+
 ## [1.1.0] - 2024-12-XX
 
 ### Added
 - `/autopilot-setup` command - Setup AutoPilot directly from inside Claude Code
-- Support for brand new/empty projects with interactive project type selection
-- Option to create initial project files for new projects
-- Improved setup process with support for both terminal and in-Claude setup
 
 ### Changed
 - Enhanced documentation to clarify setup options
 - Made setup more convenient with in-Claude command
-- Setup now detects empty directories and guides users through project initialization
 
 ## [1.0.0] - 2024-12-XX
 
