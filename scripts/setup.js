@@ -274,110 +274,17 @@ async function detectProjectConfiguration() {
 async function installClaudeHooks() {
   console.log(chalk.yellow('🔗 Installing Claude Code hooks...'));
   
-  const claudeDir = path.join(os.homedir(), '.claude');
-  const hooksDir = path.join(claudeDir, 'hooks');
+  // Use the new hook installer
+  const { execSync } = require('child_process');
+  const installerPath = path.join(__dirname, 'install-hooks.js');
   
-  // Ensure directories exist
-  await fs.ensureDir(hooksDir);
-  
-  // Install AutoPilot hook with enhanced integration
-  const hookContent = `#!/usr/bin/env node
-// Claude Code AutoPilot Hook - Enhanced for better integration
-const path = require('path');
-const fs = require('fs');
-
-// Dynamic AutoPilot loading
-let AutoPilotHook;
-function loadAutoPilot() {
-  if (AutoPilotHook) return true;
-  
-  // Try multiple paths to find AutoPilot
-  const attempts = [
-    () => require('claude-code-autopilot').AutoPilotHook,
-    () => require(path.join(process.cwd(), 'node_modules/claude-code-autopilot')).AutoPilotHook,
-    () => {
-      const devPath = '${process.cwd()}';
-      return require(devPath).AutoPilotHook;
-    }
-  ];
-  
-  for (const attempt of attempts) {
-    try {
-      AutoPilotHook = attempt();
-      return true;
-    } catch (e) {}
-  }
-  
-  console.error('⚠️ AutoPilot not found - install with: npm install -g claude-code-autopilot');
-  return false;
-}
-
-module.exports = {
-  name: 'autopilot',
-  version: '1.0.0',
-  
-  // Main hook for command interception
-  beforeCommand: async (command, args, options) => {
-    if (!loadAutoPilot()) return;
-    
-    // Check for --auto flag in various forms
-    const hasAutoFlag = command.includes('--auto') || 
-                       (options && options.auto) ||
-                       (args && args.some(a => a === '--auto'));
-    
-    if (hasAutoFlag) {
-      console.log('🤖 AutoPilot Engaged!');
-      
-      // Clean command for processing
-      const cleanCommand = command.replace(/\\s*--auto\\s*/g, ' ').trim();
-      
-      // Load config
-      const config = loadAutoPilotConfig();
-      const autopilot = new AutoPilotHook(config);
-      
-      // Execute autonomously
-      try {
-        const result = await autopilot.execute(cleanCommand, args, options);
-        
-        // Return formatted result
-        if (result && result.success) {
-          return {
-            preventDefault: true,
-            output: formatResult(result)
-          };
-        }
-      } catch (error) {
-        console.error('❌ AutoPilot error:', error.message);
-      }
-    }
-  }
-};
-
-function loadAutoPilotConfig() {
   try {
-    const configPath = path.join(process.cwd(), '.claude/autopilot.json');
-    return fs.existsSync(configPath) ? 
-      JSON.parse(fs.readFileSync(configPath, 'utf8')) : 
-      { agents: [], confidence_threshold: 85 };
-  } catch (e) {
-    return { agents: [], confidence_threshold: 85 };
+    execSync(`node ${installerPath}`, { stdio: 'inherit' });
+    console.log(chalk.green('  ✅ Claude Code hooks installed via official hook system'));
+  } catch (error) {
+    console.error(chalk.red('  ❌ Failed to install hooks:'), error.message);
+    throw error;
   }
-}
-
-function formatResult(result) {
-  let output = '\\n✅ AutoPilot Complete!\\n';
-  if (result.validation) {
-    output += '\\nConfidence: ' + result.validation.confidence.toFixed(1) + '%\\n';
-  }
-  return output;
-}`;
-
-  await fs.writeFile(path.join(hooksDir, 'autopilot.js'), hookContent);
-  
-  // Make hook executable
-  await fs.chmod(path.join(hooksDir, 'autopilot.js'), '755');
-  
-  console.log(chalk.green('  ✅ Claude Code hooks installed'));
 }
 
 async function configureAgents(projectConfig) {

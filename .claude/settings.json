@@ -1,0 +1,12 @@
+{
+  "autopilot": {
+    "enabled": true,
+    "confidence_threshold": 85,
+    "agents": [
+      "unit-test",
+      "integration-test",
+      "lint",
+      "build"
+    ]
+  }
+}

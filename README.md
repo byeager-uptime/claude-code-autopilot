@@ -2,6 +2,8 @@
 
 Just add `--auto` to any command in Claude Code for autonomous execution with automatic testing.
 
+**🎆 NEW: AutoPilot now uses Claude Code's official hook system for seamless integration!**
+
 ## Quick Start
 
 **If Claude is already running** (most users):
@@ -31,6 +33,8 @@ npm install -g claude-code-autopilot
 claude-autopilot setup
 # OR from inside Claude: /autopilot-setup
 ```
+
+✨ **AutoPilot uses Claude Code's PreToolUse hooks** to intercept commands with `--auto` and guide Claude to work autonomously.
 
 ## Examples
 
