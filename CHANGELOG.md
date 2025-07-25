@@ -5,6 +5,36 @@ All notable changes to Claude Code AutoPilot will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2024-12-XX
+
+### Added
+- **Context7 MCP Integration** - Full integration with Model Context Protocol for enhanced context awareness
+- **Unified AutoPilot Pro** - Combined autonomous execution with real-time documentation lookup
+- **Iterative Refinement Engine** - Automatically refines approach based on validation results (up to 5 iterations)
+- **Enhanced --auto Flag** - Seamless integration with Context7 for smarter autonomous execution
+- **Multi-Provider Support** - Extensible architecture for multiple MCP servers
+- **Unified Configuration System** - Single config file for AutoPilot, MCP, and integration settings
+- **Context-Aware Planning** - Execution plans enhanced with relevant documentation
+- **Intelligent Fallback** - Automatic fallback to standard AutoPilot if Context7 unavailable
+- **New CLI Commands**:
+  - `autopilot-pro setup` - Interactive setup wizard with MCP configuration
+  - `autopilot-pro mcp` - Manage MCP servers (status, start, stop)
+  - `autopilot-pro agents` - Enhanced agent management
+- **Performance Improvements** - Parallel context fetching and validation
+
+### Changed
+- Rebranded to "Claude AutoPilot Pro" for unified experience
+- Enhanced hook system to support both AutoPilot and MCP integration
+- Improved confidence scoring with context-aware calculations
+- Better error handling with detailed fallback mechanisms
+- Upgraded validation agents with context-aware capabilities
+
+### Technical Details
+- New `UnifiedAutoPilot` class orchestrates Context7 + AutoPilot
+- `Context7MCPAdapter` provides seamless MCP server integration
+- Enhanced hook script supports environment-based configuration
+- Backward compatible with existing AutoPilot installations
+
 ## [1.2.0] - 2024-12-XX
 
 ### Added

@@ -1,0 +1,106 @@
+{
+  "name": "claude-autopilot-pro",
+  "version": "3.0.0",
+  "description": "Unified autonomous execution for Claude Code with Context7 MCP integration",
+  "main": "dist/index.js",
+  "bin": {
+    "autopilot-pro": "bin/autopilot-pro.js",
+    "cap": "bin/autopilot-pro.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x bin/autopilot-pro.js",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.{js,ts}",
+    "setup": "node scripts/setup-wizard.js",
+    "install-hooks": "node scripts/install-unified-hooks.js",
+    "demo": "node scripts/demo-unified.js",
+    "preinstall": "node scripts/check-requirements.js",
+    "postinstall": "npm run setup"
+  },
+  "keywords": [
+    "claude-code",
+    "autopilot",
+    "mcp",
+    "context7",
+    "ai",
+    "automation",
+    "autonomous",
+    "development",
+    "claude",
+    "anthropic"
+  ],
+  "author": "AutoPilot Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/claude-autopilot-pro.git"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.6",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.0",
+    "execa": "^7.2.0",
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "jsonrpc-lite": "^2.2.0",
+    "ws": "^8.14.0",
+    "chokidar": "^3.5.3",
+    "semver": "^7.5.0",
+    "yaml": "^2.3.0",
+    "dotenv": "^16.3.0",
+    "axios": "^1.5.0",
+    "playwright": "^1.40.0",
+    "puppeteer": "^21.0.0",
+    "sharp": "^0.32.0",
+    "pixelmatch": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.5.0",
+    "@types/fs-extra": "^11.0.0",
+    "@types/ws": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "jest": "^29.6.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.1.0"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "scripts/",
+    "templates/",
+    "hooks/",
+    "docs/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "autopilot": {
+    "version": "3.0.0",
+    "features": [
+      "context7-mcp",
+      "autonomous-execution",
+      "iterative-refinement",
+      "multi-agent-validation",
+      "unified-configuration"
+    ]
+  },
+  "mcp": {
+    "servers": {
+      "context7": {
+        "command": "npx",
+        "args": ["@context7/mcp-server"],
+        "required": false
+      }
+    }
+  }
+}
