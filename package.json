@@ -2,7 +2,7 @@
   "name": "claude-code-autopilot",
   "version": "1.2.0",
   "description": "Autonomous execution and validation extension for Claude Code with multi-agent testing",
-  "main": "dist/index.js",
+  "main": "index.js",
   "bin": {
     "claude-autopilot": "bin/claude-autopilot.js",
     "autopilot": "bin/claude-autopilot.js"
