@@ -3,9 +3,8 @@
 const { program } = require('commander');
 const chalk = require('chalk');
 const ora = require('ora');
-const { setupAutopilot } = require('../dist/setup');
-const { runDemo } = require('../dist/demo');
-const { validateInstallation } = require('../dist/validation');
+const { setupAutopilot } = require('../scripts/setup');
+const { runDemo } = require('../scripts/demo');
 
 program
   .name('claude-autopilot')
@@ -52,29 +51,31 @@ program
   .command('validate')
   .description('Validate AutoPilot installation and Claude Code integration')
   .action(async () => {
-    const spinner = ora('Validating installation...').start();
+    console.log(chalk.blue('🔍 Validating Claude Code AutoPilot installation...'));
     
-    try {
-      const result = await validateInstallation();
-      
-      if (result.success) {
-        spinner.succeed(chalk.green('✅ Installation validated successfully'));
-        console.log(chalk.blue('\nValidation Results:'));
-        result.checks.forEach(check => {
-          const status = check.passed ? '✅' : '❌';
-          console.log(`  ${status} ${check.name}: ${check.message}`);
-        });
-      } else {
-        spinner.fail(chalk.red('❌ Validation failed'));
-        console.log(chalk.red('\nIssues found:'));
-        result.checks.filter(c => !c.passed).forEach(check => {
-          console.log(`  ❌ ${check.name}: ${check.message}`);
-        });
+    // Basic validation checks
+    const checks = [
+      { name: 'Node.js', test: () => process.version },
+      { name: 'Claude CLI', test: () => require('child_process').execSync('which claude', { encoding: 'utf8' }) },
+      { name: 'AutoPilot package', test: () => require('../package.json').version }
+    ];
+    
+    let allPassed = true;
+    
+    for (const check of checks) {
+      try {
+        const result = check.test();
+        console.log(chalk.green(`  ✅ ${check.name}: ${result.toString().trim()}`));
+      } catch (error) {
+        console.log(chalk.red(`  ❌ ${check.name}: Not found`));
+        allPassed = false;
       }
-      
-    } catch (error) {
-      spinner.fail(chalk.red('❌ Validation error: ' + error.message));
-      process.exit(1);
+    }
+    
+    if (allPassed) {
+      console.log(chalk.green('\n✅ Installation validated successfully!'));
+    } else {
+      console.log(chalk.red('\n❌ Some checks failed. Please install missing dependencies.'));
     }
   });
 
@@ -83,16 +84,18 @@ program
   .description('Remove AutoPilot from Claude Code')
   .option('-y, --yes', 'Skip confirmation')
   .action(async (options) => {
-    const { uninstallAutopilot } = require('../dist/setup');
-    await uninstallAutopilot(options);
+    console.log(chalk.blue('🗑️  Uninstalling AutoPilot...'));
+    console.log(chalk.gray('This would remove AutoPilot hooks and configuration.'));
+    console.log(chalk.yellow('⚠️  Uninstall functionality not yet implemented.'));
   });
 
 program
   .command('update')
   .description('Update AutoPilot to latest version')
   .action(async () => {
-    const { updateAutopilot } = require('../dist/setup');
-    await updateAutopilot();
+    console.log(chalk.blue('📦 Updating AutoPilot...'));
+    console.log(chalk.gray('This would update to the latest version.'));
+    console.log(chalk.yellow('⚠️  Update functionality not yet implemented.'));
   });
 
 program
@@ -102,8 +105,9 @@ program
   .option('--timeout <seconds>', 'Set validation timeout')
   .option('--agents <list>', 'Enable/disable specific agents')
   .action(async (options) => {
-    const { configureAutopilot } = require('../dist/config');
-    await configureAutopilot(options);
+    console.log(chalk.blue('⚙️  Configuring AutoPilot...'));
+    console.log(chalk.gray('Options provided:'), options);
+    console.log(chalk.yellow('⚠️  Configuration functionality not yet implemented.'));
   });
 
 // Show help if no command provided

@@ -17,33 +17,95 @@ Transform Claude Code from an interactive assistant into a self-validating devel
 
 ## 🚀 Quick Start
 
-### Installation
+### Step 1: Install AutoPilot (One Time Only)
 
 ```bash
-# Install the package
+# Install globally on your Mac
 npm install -g claude-code-autopilot
 
-# One-command setup in your project
-cd your-project
-claude-autopilot setup
-
-# That's it! AutoPilot is ready to use
+# Verify installation
+claude-autopilot --version
 ```
 
-### Basic Usage
+### Step 2: Setup in Each Project (Required Per Project)
 
 ```bash
-# Add --auto to any Claude command for autonomous execution
+# Navigate to ANY project on your Mac
+cd ~/path/to/your/project
+
+# Run setup (takes 10 seconds)
+claude-autopilot setup
+
+# ✅ AutoPilot is now configured for THIS project
+```
+
+### Step 3: Use the --auto Flag
+
+**IMPORTANT**: You still use the regular `claude` command, just add `--auto` at the end!
+
+```bash
+# Regular Claude command:
+claude "fix the login bug"
+
+# With AutoPilot (add --auto):
 claude "fix the login bug" --auto
-claude "add loading spinner to submit button" --auto  
-claude "optimize the database query" --auto
+```
 
-# Enable AutoPilot for all commands
-claude --autopilot-on
-claude "implement user authentication"  # Now runs with AutoPilot
+### What Happens When You Use --auto
 
-# Disable when you want manual control
-claude --autopilot-off
+When you add `--auto` to any Claude command, AutoPilot:
+
+1. **Clarifies Requirements First**
+   ```
+   You: claude "fix the API" --auto
+   AutoPilot: "Which API endpoint is having issues? What error are you seeing?"
+   You: "The POST /users returns 500 error"
+   ```
+
+2. **Reproduces the Issue**
+   - Actually runs your code to confirm the bug exists
+   - Takes screenshots/logs as evidence
+
+3. **Makes the Fix Automatically**
+   - No more "Should I proceed?" prompts
+   - Applies changes with confidence
+
+4. **Runs Multi-Agent Validation**
+   ```
+   ✅ Unit Tests: All passing
+   ✅ GUI Tests: Visual regression passed  
+   ✅ Integration: API working correctly
+   ✅ Security: No vulnerabilities
+   ```
+
+5. **Verifies the Fix**
+   - Proves the original issue is resolved
+   - Shows before/after evidence
+   - Only reports success when 100% fixed
+
+### Real Examples
+
+```bash
+# Example 1: Bug Fix
+claude "fix null pointer error when email is empty" --auto
+# AutoPilot reproduces bug → fixes it → tests it → verifies it's gone
+
+# Example 2: Feature Addition  
+claude "add loading spinner to login button" --auto
+# AutoPilot asks for details → implements → visual tests → accessibility check
+
+# Example 3: Performance 
+claude "make the search faster" --auto
+# AutoPilot measures current speed → optimizes → verifies improvement
+```
+
+### If Claude Code is Already Running
+
+```bash
+# If you're already in a Claude session, just add --auto to your requests
+# Claude is running interactively...
+You: fix the login bug --auto
+# AutoPilot takes over with autonomous execution
 ```
 
 ## 💡 How It Works
@@ -221,11 +283,36 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
+## ❓ Frequently Asked Questions
+
+### Does AutoPilot work globally on my Mac?
+**YES!** Once installed with `npm install -g`, AutoPilot is available system-wide. But you need to run `claude-autopilot setup` once in each project.
+
+### Do I still need to use the `claude` command?
+**YES!** AutoPilot extends Claude Code, it doesn't replace it. You use `claude "your request" --auto`.
+
+### What if Claude Code is already running?
+Just add `--auto` to your requests within the Claude session: `fix the bug --auto`
+
+### Can I use it without --auto?
+Yes! Without `--auto`, Claude works normally. AutoPilot only activates when you add the flag.
+
+### Is it safe?
+AutoPilot includes automatic rollback if validation fails. Your code is always protected.
+
+## 🚨 Important Notes
+
+1. **One-time global install**: `npm install -g claude-code-autopilot`
+2. **Per-project setup**: Run `claude-autopilot setup` in each project
+3. **Use regular claude command**: Just add `--auto` at the end
+4. **AutoPilot asks questions**: It will clarify before making changes
+5. **Validation is automatic**: All changes are tested before completion
+
 ## 🆘 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/claude-code-autopilot/issues)
-- **Documentation**: [Full documentation](https://github.com/yourusername/claude-code-autopilot/wiki)
-- **Examples**: [Sample projects](https://github.com/yourusername/claude-code-autopilot/tree/main/examples)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/byeager-uptime/claude-code-autopilot/issues)
+- **Documentation**: [Full documentation](https://github.com/byeager-uptime/claude-code-autopilot/wiki)
+- **Examples**: [Sample projects](https://github.com/byeager-uptime/claude-code-autopilot/tree/main/examples)
 
 ## 🗺️ Roadmap
 

@@ -1,0 +1,24 @@
+{
+  "autopilot": {
+    "enabled": true,
+    "confidence_threshold": 85,
+    "validation_timeout": 60,
+    "auto_rollback": true,
+    "require_reproduction": true,
+    "agents": {
+      "unit-test": {
+        "enabled": true
+      },
+      "gui-test": {
+        "enabled": true
+      }
+    },
+    "project": {
+      "type": "javascript",
+      "frameworks": [],
+      "test_command": "npm test",
+      "lint_command": "npm run lint",
+      "build_command": "npm run build"
+    }
+  }
+}
