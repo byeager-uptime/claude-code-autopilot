@@ -30,11 +30,14 @@ claude-autopilot --version
 ### Step 2: Setup in Each Project (Required Per Project)
 
 ```bash
-# Navigate to ANY project on your Mac
+# Option A: Setup from terminal
 cd ~/path/to/your/project
-
-# Run setup (takes 10 seconds)
 claude-autopilot setup
+
+# Option B: Setup from inside Claude Code (NEW!)
+cd ~/path/to/your/project
+claude
+> /autopilot-setup
 
 # ✅ AutoPilot is now configured for THIS project
 ```

@@ -18,8 +18,10 @@ const { execSync } = require('child_process');
 async function setupAutopilot(options = {}) {
   console.log(chalk.blue('🔧 Claude Code AutoPilot Setup\n'));
   
-  // Step 1: Detect Claude Code
-  await detectClaudeCode();
+  // Step 1: Detect Claude Code (skip if running from inside Claude)
+  if (!process.env.CLAUDE_CODE_SESSION) {
+    await detectClaudeCode();
+  }
   
   // Step 2: Detect project type and frameworks
   const projectConfig = await detectProjectConfiguration();
@@ -33,8 +35,10 @@ async function setupAutopilot(options = {}) {
   // Step 5: Create project configuration
   await createProjectConfiguration(projectConfig);
   
-  // Step 6: Install testing dependencies
-  await installTestingDependencies(projectConfig);
+  // Step 6: Install testing dependencies (skip in non-interactive mode)
+  if (!options.yes) {
+    await installTestingDependencies(projectConfig);
+  }
   
   // Step 7: Validate installation
   await validateSetup();
