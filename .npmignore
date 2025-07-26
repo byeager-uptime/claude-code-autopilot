@@ -1,0 +1,42 @@
+# Development files
+node_modules/
+*.log
+*.lock
+.git/
+.gitignore
+.env
+.DS_Store
+
+# Test files
+test/
+tests/
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+test-*.js
+test-*.sh
+
+# Documentation
+docs/
+*.md
+!README.md
+!commands/*.md
+
+# Development config
+.eslintrc*
+.prettierrc*
+tsconfig.json
+jest.config.js
+
+# Archive files
+ARCHIVED_*
+autopilot-repo/
+
+# Demo files
+demo-*.js
+
+# Package files
+package-*.json
+!package.json

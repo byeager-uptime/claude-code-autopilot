@@ -75,8 +75,11 @@
     "bin/",
     "scripts/",
     "templates/",
+    "hooks/",
+    "commands/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "index.js"
   ],
   "publishConfig": {
     "access": "public"
