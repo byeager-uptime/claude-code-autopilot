@@ -274,13 +274,13 @@ async function detectProjectConfiguration() {
 async function installClaudeHooks() {
   console.log(chalk.yellow('🔗 Installing Claude Code hooks...'));
   
-  // Use the new hook installer
+  // Use the improved hook installer
   const { execSync } = require('child_process');
-  const installerPath = path.join(__dirname, 'install-hooks.js');
+  const installerPath = path.join(__dirname, 'install-hooks-improved.js');
   
   try {
     execSync(`node ${installerPath}`, { stdio: 'inherit' });
-    console.log(chalk.green('  ✅ Claude Code hooks installed via official hook system'));
+    console.log(chalk.green('  ✅ Claude Code hooks installed with full integration'));
   } catch (error) {
     console.error(chalk.red('  ❌ Failed to install hooks:'), error.message);
     throw error;
